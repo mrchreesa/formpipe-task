@@ -30,12 +30,27 @@ export type User = {
 export function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [opened, { toggle }] = useDisclosure(false);
+  const [filters, setFilters] = useState({
+    name: '',
+    hair: '',
+    eyes: '',
+    gender: '',
+    glasses: 'all',
+  });
 
   useEffect(() => {
     fetch('http://localhost:3000/users')
       .then((response) => response.json())
       .then((data) => setUsers(data));
   }, []);
+  const handleTextInputChange = (value: string) => {
+    setFilters({ ...filters, name: value });
+  };
+
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters({ ...filters, [key]: value });
+  };
+  console.log(filters);
 
   return (
     <>
@@ -49,21 +64,36 @@ export function UsersPage() {
         <Paper shadow="sm" p={'lg'} mb="md" withBorder bg={'gray.1'} miw={600}>
           <Stack gap={10}>
             <Group grow wrap={'wrap'}>
-              <TextInput label="Name" placeholder="Enter user's name to filter list" />
+              <TextInput
+                label="Name"
+                placeholder="Enter user's name to filter list"
+                onChange={(event) => handleTextInputChange(event.currentTarget.value)}
+              />
               <Select
                 label="Hair Colour"
                 placeholder="Pick value to filter list"
                 data={['Black', 'Brown', 'Blonde', 'Red', 'Grey']}
+                onChange={(value) => handleFilterChange('hair', value!)}
               />
               <Select
                 label="Eye Colour"
                 placeholder="Pick value"
                 data={['Brown', 'Blue', 'Green', 'Grey']}
+                onChange={(value) => handleFilterChange('eyes', value!)}
               />
-              <Select label="Gender" placeholder="Pick value" data={['Male', 'Female']} />
+              <Select
+                label="Gender"
+                placeholder="Pick value"
+                data={['Male', 'Female']}
+                onChange={(value) => handleFilterChange('gender', value!)}
+              />
             </Group>
 
-            <Radio.Group label="Glasses?" defaultValue="all">
+            <Radio.Group
+              label="Glasses?"
+              defaultValue="all"
+              onChange={(value) => handleFilterChange('glasses', value!)}
+            >
               <Group>
                 <Radio label="All" value="all" />
                 <Radio label="Glasses" value="glasses" />
