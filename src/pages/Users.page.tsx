@@ -29,20 +29,61 @@ export type User = {
  */
 export function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [opened, { toggle }] = useDisclosure(false);
-  const [filters, setFilters] = useState({
+  const filtersInitialValue = {
     name: '',
-    hair: '',
-    eyes: '',
-    gender: '',
+    hair: null,
+    eyes: null,
+    gender: null,
     glasses: 'all',
-  });
+  }
+  const [filters, setFilters] = useState(filtersInitialValue);
 
   useEffect(() => {
     fetch('http://localhost:3000/users')
       .then((response) => response.json())
-      .then((data) => setUsers(data));
+      .then((data) => {
+        setUsers(data);
+        setFilteredUsers(data); 
+      })
+      .catch((error) => console.error(error));
   }, []);
+
+  const resetFilters = () => {
+    setFilters(filtersInitialValue);
+    setFilteredUsers(users);
+  }
+
+  const applyFilters = () => {
+    let filtered = users;
+
+    if (filters.name) {
+      filtered = filtered.filter((user) =>
+        user.name.toLowerCase().includes(filters.name.toLowerCase())
+      );
+    }
+
+    if (filters.hair) {
+      filtered = filtered.filter((user) => user.hair === filters.hair);
+    }
+
+    if (filters.eyes) {
+      filtered = filtered.filter((user) => user.eyes === filters.eyes);
+    }
+
+    if (filters.gender) {
+      filtered = filtered.filter((user) => user.gender === filters.gender);
+    }
+
+    if (filters.glasses !== 'all') {
+      const hasGlasses = filters.glasses === 'glasses';
+      filtered = filtered.filter((user) => user.glasses === hasGlasses);
+    }
+
+    setFilteredUsers(filtered);
+  };
+  
   const handleTextInputChange = (value: string) => {
     setFilters({ ...filters, name: value });
   };
@@ -50,8 +91,9 @@ export function UsersPage() {
   const handleFilterChange = (key: string, value: string) => {
     setFilters({ ...filters, [key]: value });
   };
-  console.log(filters);
 
+  console.log(filters);
+  
   return (
     <>
       <Title order={1}>Users</Title>
@@ -67,37 +109,50 @@ export function UsersPage() {
               <TextInput
                 label="Name"
                 placeholder="Enter user's name to filter list"
+                value={filters.name}
                 onChange={(event) => handleTextInputChange(event.currentTarget.value)}
               />
               <Select
                 label="Hair Colour"
                 placeholder="Pick value to filter list"
                 data={['Black', 'Brown', 'Blonde', 'Red', 'Grey']}
+                value={filters.hair}
                 onChange={(value) => handleFilterChange('hair', value!)}
               />
               <Select
                 label="Eye Colour"
                 placeholder="Pick value"
                 data={['Brown', 'Blue', 'Green', 'Grey']}
+                value={filters.eyes}
                 onChange={(value) => handleFilterChange('eyes', value!)}
               />
               <Select
                 label="Gender"
                 placeholder="Pick value"
                 data={['Male', 'Female']}
+                value={filters.gender}
                 onChange={(value) => handleFilterChange('gender', value!)}
               />
             </Group>
 
             <Radio.Group
               label="Glasses?"
-              defaultValue="all"
+              value={filters.glasses}
               onChange={(value) => handleFilterChange('glasses', value!)}
             >
-              <Group>
-                <Radio label="All" value="all" />
-                <Radio label="Glasses" value="glasses" />
-                <Radio label="No Glasses" value="no-glasses" />
+              <Group align="center" grow>
+                <Group>
+                  <Radio label="All" value="all" />
+                  <Radio label="Glasses" value="glasses" />
+                  <Radio label="No Glasses" value="no-glasses" />
+                </Group>
+                <Button variant='light' my={'md'} onClick={resetFilters}>
+                  {'Reset Filters'}
+                </Button>
+                <Button my={'md'} onClick={applyFilters}>
+                  {'Apply Filters'}
+                </Button>
+                
               </Group>
             </Radio.Group>
           </Stack>
@@ -105,7 +160,7 @@ export function UsersPage() {
       </Collapse>
 
       <Group miw={600}>
-        {users.map((user, index) => (
+        {filteredUsers.map((user, index) => (
           <Card radius={'md'} withBorder key={index} w={238}>
             <Card.Section>
               {/* We know where the images are, so we just grab the file based on the filename associated with the user */}
