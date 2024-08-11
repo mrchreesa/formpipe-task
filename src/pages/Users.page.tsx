@@ -13,6 +13,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import SkeletonComponent from '../components/Skeleton';
 
 export type User = {
   id: string;
@@ -31,6 +32,7 @@ export function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [opened, { toggle }] = useDisclosure(false);
+  const [loading, setLoading] = useState(false);
   const filtersInitialValue = {
     name: '',
     hair: null,
@@ -41,11 +43,13 @@ export function UsersPage() {
   const [filters, setFilters] = useState(filtersInitialValue);
 
   useEffect(() => {
+    setLoading(true);
     fetch('http://localhost:3000/users')
       .then((response) => response.json())
       .then((data) => {
         setUsers(data);
         setFilteredUsers(data); 
+        setLoading(false);
       })
       .catch((error) => console.error(error));
   }, []);
@@ -160,7 +164,7 @@ export function UsersPage() {
       </Collapse>
 
       <Group miw={600}>
-        {filteredUsers.map((user, index) => (
+        {loading ? <><SkeletonComponent /><SkeletonComponent /> <SkeletonComponent /></> : filteredUsers.map((user, index) => (
           <Card radius={'md'} withBorder key={index} w={238}>
             <Card.Section>
               {/* We know where the images are, so we just grab the file based on the filename associated with the user */}
