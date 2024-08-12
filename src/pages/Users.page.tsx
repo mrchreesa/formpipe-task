@@ -20,6 +20,7 @@ import GridBlack from '../assets/grid-black.svg';
 import TableIcon from '../assets/table-icon.svg';
 import TableBlack from '../assets/table-black.svg';
 import TableView from '@/components/TableView';
+import UserInfoModal from '@/components/UserInfoModal';
 
 export type User = {
   id: string;
@@ -32,15 +33,16 @@ export type User = {
   roles: Array<string>;
 };
 
-/**
- * The UsersPage contacts the mock web server to fetch the list of users and displays them in a grid.
- */
+
 export function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [opened, { toggle }] = useDisclosure(false);
   const [loading, setLoading] = useState(false);
   const [toggleGrid, setToggleGrid] = useState(true);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null); 
+  const [modalOpened, { open, close }] = useDisclosure(false); 
+
   const filtersInitialValue = {
     name: '',
     hair: null,
@@ -104,7 +106,10 @@ export function UsersPage() {
     setFilters({ ...filters, [key]: value });
   };
 
-  console.log(filters);
+  const handleUserClick = (user: User) => {
+    setSelectedUser(user); 
+    open();
+  };
 
   return (
     <>
@@ -182,12 +187,18 @@ export function UsersPage() {
         {loading ? (
           <>
             <SkeletonComponent />
-            <SkeletonComponent /> <SkeletonComponent />
+            <SkeletonComponent /> 
+            <SkeletonComponent />
           </>
+         ) : toggleGrid ? (
+          filteredUsers.map((user, index) => (
+            <GridView key={index} user={user} onClick={() => handleUserClick(user)} />
+          ))
         ) : (
-       toggleGrid ?   filteredUsers.map((user, index) =>  <GridView key={index} user={user} />) : <TableView  users={filteredUsers} />
+          <TableView users={filteredUsers} onUserClick={handleUserClick} />
         )}
       </Group>
+      <UserInfoModal user={selectedUser} opened={modalOpened} onClose={close} />
     </>
   );
 }

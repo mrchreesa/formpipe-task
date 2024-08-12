@@ -25,9 +25,11 @@ export type User = {
 
 type TableViewProps = {
   users: User[];
+  onUserClick: (user: User) => void;
+
 };
 
-const TableView: React.FC<TableViewProps> = ({ users }) => {
+const TableView: React.FC<TableViewProps> = ({ users, onUserClick }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [toggleSortName, setToggleSortName] = useState(true);
   const usersPerPage = 10;
@@ -64,7 +66,7 @@ const TableView: React.FC<TableViewProps> = ({ users }) => {
   const totalPages = Math.ceil(users.length / usersPerPage);
 
   const rows = currentUsers.map((u, index) => (
-    <Table.Tr key={u.id}>
+    <Table.Tr key={u.id} style={{ cursor: 'pointer' }} onClick={() => onUserClick(u)} >
       <Table.Td>{indexOfFirstUser + index + 1}</Table.Td>
       <Table.Td>
         {' '}
