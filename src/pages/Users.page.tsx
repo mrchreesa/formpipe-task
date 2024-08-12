@@ -14,6 +14,12 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import SkeletonComponent from '../components/Skeleton';
+import GridView from '@/components/GridView';
+import GridIcon from '../assets/grid-icon.svg';
+import GridBlack from '../assets/grid-black.svg';
+import TableIcon from '../assets/table-icon.svg';
+import TableBlack from '../assets/table-black.svg';
+import TableView from '@/components/TableView';
 
 export type User = {
   id: string;
@@ -23,6 +29,7 @@ export type User = {
   hair: 'black' | 'brown' | 'blonde' | 'red' | 'grey';
   eyes: 'brown' | 'blue' | 'green';
   glasses: boolean;
+  roles: Array<string>;
 };
 
 /**
@@ -33,13 +40,14 @@ export function UsersPage() {
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [opened, { toggle }] = useDisclosure(false);
   const [loading, setLoading] = useState(false);
+  const [toggleGrid, setToggleGrid] = useState(true);
   const filtersInitialValue = {
     name: '',
     hair: null,
     eyes: null,
     gender: null,
     glasses: 'all',
-  }
+  };
   const [filters, setFilters] = useState(filtersInitialValue);
 
   useEffect(() => {
@@ -48,7 +56,7 @@ export function UsersPage() {
       .then((response) => response.json())
       .then((data) => {
         setUsers(data);
-        setFilteredUsers(data); 
+        setFilteredUsers(data);
         setLoading(false);
       })
       .catch((error) => console.error(error));
@@ -57,7 +65,7 @@ export function UsersPage() {
   const resetFilters = () => {
     setFilters(filtersInitialValue);
     setFilteredUsers(users);
-  }
+  };
 
   const applyFilters = () => {
     let filtered = users;
@@ -87,7 +95,7 @@ export function UsersPage() {
 
     setFilteredUsers(filtered);
   };
-  
+
   const handleTextInputChange = (value: string) => {
     setFilters({ ...filters, name: value });
   };
@@ -97,15 +105,23 @@ export function UsersPage() {
   };
 
   console.log(filters);
-  
+
   return (
     <>
       <Title order={1}>Users</Title>
-
-      <Button my={'md'} onClick={toggle}>
-        {opened ? 'Hide filters' : 'Show Filters'}
-      </Button>
-
+      <Group justify="space-between" >
+        <Button my={'md'} onClick={toggle}>
+          {opened ? 'Hide filters' : 'Show Filters'}
+        </Button>
+        <Group>
+          <Button px={0} mr={-10} variant="transparent" onClick={() => setToggleGrid(true)}>
+           {toggleGrid ? <Image p="xs" px={0} h={60} src={GridBlack} alt="grid icon black" /> : <Image p="xs" px={0} h={60} src={GridIcon} alt="grid icon grey" />}
+          </Button>
+          <Button px={0} variant="transparent" onClick={() => setToggleGrid(false)}>
+          {!toggleGrid ? <Image p="xs" px={0} h={65} src={TableBlack} alt="list icon black" /> :  <Image p="xs" px={0} h={65} src={TableIcon} alt="list icon grey" />}
+          </Button>
+        </Group>
+      </Group>
       <Collapse in={opened}>
         <Paper shadow="sm" p={'lg'} mb="md" withBorder bg={'gray.1'} miw={600}>
           <Stack gap={10}>
@@ -150,13 +166,12 @@ export function UsersPage() {
                   <Radio label="Glasses" value="glasses" />
                   <Radio label="No Glasses" value="no-glasses" />
                 </Group>
-                <Button variant='light' my={'md'} onClick={resetFilters}>
+                <Button variant="light" my={'md'} onClick={resetFilters}>
                   {'Reset Filters'}
                 </Button>
                 <Button my={'md'} onClick={applyFilters}>
                   {'Apply Filters'}
                 </Button>
-                
               </Group>
             </Radio.Group>
           </Stack>
@@ -164,27 +179,14 @@ export function UsersPage() {
       </Collapse>
 
       <Group miw={600}>
-        {loading ? <><SkeletonComponent /><SkeletonComponent /> <SkeletonComponent /></> : filteredUsers.map((user, index) => (
-          <Card radius={'md'} withBorder key={index} w={238}>
-            <Card.Section>
-              {/* We know where the images are, so we just grab the file based on the filename associated with the user */}
-              <Image src={`/uploads/${user.avatar}`} alt={`Avatar for ${user.name}`} />
-            </Card.Section>
-            <Title my={'md'} order={4}>
-              {user.name}
-            </Title>
-            <Button
-              size={'xs'}
-              fullWidth
-              variant={'outline'}
-              color={'grape'}
-              component={'a'}
-              href={`/users/view/${user.id}`}
-            >
-              View
-            </Button>
-          </Card>
-        ))}
+        {loading ? (
+          <>
+            <SkeletonComponent />
+            <SkeletonComponent /> <SkeletonComponent />
+          </>
+        ) : (
+       toggleGrid ?   filteredUsers.map((user, index) =>  <GridView key={index} user={user} />) : <TableView  users={users} />
+        )}
       </Group>
     </>
   );
