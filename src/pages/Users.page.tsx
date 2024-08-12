@@ -185,7 +185,7 @@ export function UsersPage() {
             <SkeletonComponent /> <SkeletonComponent />
           </>
         ) : (
-       toggleGrid ?   filteredUsers.map((user, index) =>  <GridView key={index} user={user} />) : <TableView  users={users} />
+       toggleGrid ?   filteredUsers.map((user, index) =>  <GridView key={index} user={user} />) : <TableView  users={filteredUsers} />
         )}
       </Group>
     </>
