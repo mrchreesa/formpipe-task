@@ -1,5 +1,6 @@
 import { Button, Card, Title, Image } from '@mantine/core';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export type User = {
   id: string;
@@ -17,6 +18,11 @@ type GridViewProps = {
 };
 
 const GridView: React.FC<GridViewProps> = ({ user, onClick }) => {
+  const navigate = useNavigate();
+
+  const handleViewClick = () => {
+    navigate(`/users/view/${user.id}`, { state: { user } });
+  };
   return (
     <Card
       radius={'md'}
@@ -40,7 +46,7 @@ const GridView: React.FC<GridViewProps> = ({ user, onClick }) => {
         variant={'outline'}
         color={'grape'}
         component={'a'}
-        href={`/users/view/${user.id}`}
+        onClick={handleViewClick}
       >
         View
       </Button>
