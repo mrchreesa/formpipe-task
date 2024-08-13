@@ -21,6 +21,7 @@ import TableBlack from '../assets/table-black.svg';
 import TableView from '@/components/TableView';
 import UserInfoModal from '@/components/User/UserInfoModal';
 import { User } from '@/types/userTypes';
+import RoleButtons from '../components/RoleButtons';
 
 type FilterValues = {
   name: string;
@@ -30,22 +31,21 @@ type FilterValues = {
   glasses: 'all' | 'glasses' | 'no-glasses';
 };
 
-
 export function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [opened, { toggle }] = useDisclosure(false);
   const [loading, setLoading] = useState(true);
   const [toggleGrid, setToggleGrid] = useState(true);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null); 
-  const [modalOpened, { open, close }] = useDisclosure(false); 
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [modalOpened, { open, close }] = useDisclosure(false);
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 
-  
   const filtersInitialValue: FilterValues = {
     name: '',
-    hair: null ,
-    eyes: null ,
-    gender: null ,
+    hair: null,
+    eyes: null,
+    gender: null,
     glasses: 'all',
   };
   const [filters, setFilters] = useState(filtersInitialValue);
@@ -62,46 +62,70 @@ export function UsersPage() {
       .catch((error) => console.error(error));
   }, []);
 
-  const resetFilters = () => {
+  const resetFilters = ( ) => {
     setFilters(filtersInitialValue);
     setFilteredUsers(users);
+    setSelectedRoles([]);
   };
 
-  const applyFilters = () => {
+  const applyFilters = (role: string | null = null) => {
+    let updatedSelectedRoles = selectedRoles;
+  
+    // Group users by selected roles
+    if (role) {
+      updatedSelectedRoles = updatedSelectedRoles.includes(role)
+        ? updatedSelectedRoles.filter((r) => r !== role)
+        : [...updatedSelectedRoles, role];
+      setSelectedRoles(updatedSelectedRoles);
+    }
+  
     let filtered = users;
-
+  
+    // Filter by name
     if (filters.name) {
       filtered = filtered.filter((user) =>
         user.name.toLowerCase().includes(filters.name.toLowerCase())
       );
     }
-
+  
+    // Filter by hair color
     if (filters.hair !== null) {
-      filtered = filtered.filter((user) => 
-        user.hair.toLowerCase() === filters.hair!.toLowerCase()
+      filtered = filtered.filter(
+        (user) => user.hair.toLowerCase() === filters.hair!.toLowerCase()
       );
     }
-    
+  
+    // Filter by eye color
     if (filters.eyes !== null) {
-      filtered = filtered.filter((user) => 
-        user.eyes.toLowerCase() === filters.eyes!.toLowerCase()
+      filtered = filtered.filter(
+        (user) => user.eyes.toLowerCase() === filters.eyes!.toLowerCase()
       );
     }
-    
+  
+    // Filter by gender
     if (filters.gender !== null) {
-      filtered = filtered.filter((user) => 
-        user.gender.toLowerCase() === filters.gender!.toLowerCase()
+      filtered = filtered.filter(
+        (user) => user.gender.toLowerCase() === filters.gender!.toLowerCase()
       );
     }
-    
-
+  
+    // Filter by glasses
     if (filters.glasses !== 'all') {
       const hasGlasses = filters.glasses === 'glasses';
       filtered = filtered.filter((user) => user.glasses === hasGlasses);
     }
-
+  
+    // Filter by roles
+    if (updatedSelectedRoles.length > 0) {
+      filtered = filtered.filter((user) =>
+        updatedSelectedRoles.every((selectedRole) => user.roles.includes(selectedRole))
+      );
+    }
+  
+    
     setFilteredUsers(filtered);
   };
+  
 
   const handleTextInputChange = (value: string) => {
     setFilters({ ...filters, name: value });
@@ -112,23 +136,39 @@ export function UsersPage() {
   };
 
   const handleUserClick = (user: User) => {
-    setSelectedUser(user); 
+    setSelectedUser(user);
     open();
   };
   
+
   return (
     <>
       <Title order={1}>Users</Title>
-      <Group justify="space-between" >
+      <Group justify="space-between">
         <Button my={'md'} onClick={toggle}>
           {opened ? 'Hide filters' : 'Show Filters'}
         </Button>
+        <RoleButtons
+          users={users}
+          filteredUsers={filteredUsers}
+          selectedRoles={selectedRoles}
+          handleRoleClick={applyFilters}
+          loading={loading}
+        />
         <Group>
           <Button px={0} mr={-10} variant="transparent" onClick={() => setToggleGrid(true)}>
-           {toggleGrid ? <Image p="xs" px={0} h={60} src={GridBlack} alt="grid icon black" /> : <Image p="xs" px={0} h={60} src={GridIcon} alt="grid icon grey" />}
+            {toggleGrid ? (
+              <Image p="xs" px={0} h={60} src={GridBlack} alt="grid icon black" />
+            ) : (
+              <Image p="xs" px={0} h={60} src={GridIcon} alt="grid icon grey" />
+            )}
           </Button>
           <Button px={0} variant="transparent" onClick={() => setToggleGrid(false)}>
-          {!toggleGrid ? <Image p="xs" px={0} h={65} src={TableBlack} alt="list icon black" /> :  <Image p="xs" px={0} h={65} src={TableIcon} alt="list icon grey" />}
+            {!toggleGrid ? (
+              <Image p="xs" px={0} h={65} src={TableBlack} alt="list icon black" />
+            ) : (
+              <Image p="xs" px={0} h={65} src={TableIcon} alt="list icon grey" />
+            )}
           </Button>
         </Group>
       </Group>
@@ -179,7 +219,7 @@ export function UsersPage() {
                 <Button variant="light" my={'md'} onClick={resetFilters}>
                   {'Reset Filters'}
                 </Button>
-                <Button my={'md'} onClick={applyFilters}>
+                <Button my={'md'} onClick={() => applyFilters()}>
                   {'Apply Filters'}
                 </Button>
               </Group>
@@ -189,23 +229,23 @@ export function UsersPage() {
       </Collapse>
 
       <Group miw={600}>
-  {loading ? (
-    <>
-      <SkeletonComponent />
-      <SkeletonComponent /> 
-      <SkeletonComponent />
-      <SkeletonComponent />
-    </>
-  ) : filteredUsers.length === 0 ? (  // Check if no users are found
-    <div>No users found</div>  
-  ) : toggleGrid ? (
-    filteredUsers.map((user, index) => (
-      <GridView key={index} user={user} onClick={() => handleUserClick(user)} />
-    ))
-  ) : (
-    <TableView users={filteredUsers} onUserClick={handleUserClick} />
-  )}
-</Group>
+        {loading ? (
+          <>
+            <SkeletonComponent />
+            <SkeletonComponent />
+            <SkeletonComponent />
+            <SkeletonComponent />
+          </>
+        ) : filteredUsers.length === 0 ? ( // Check if no users are found
+          <div>No users found</div>
+        ) : toggleGrid ? (
+          filteredUsers.map((user, index) => (
+            <GridView key={index} user={user} onClick={() => handleUserClick(user)} />
+          ))
+        ) : (
+          <TableView users={filteredUsers} onUserClick={handleUserClick} />
+        )}
+      </Group>
 
       <UserInfoModal user={selectedUser} opened={modalOpened} onClose={close} />
     </>
