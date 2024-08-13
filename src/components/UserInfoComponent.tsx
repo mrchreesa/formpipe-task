@@ -1,5 +1,6 @@
-import { Flex, Text, Image, Card } from '@mantine/core';
-import { useLocation } from 'react-router-dom';
+import { Flex, Text, Image, Card, Button } from '@mantine/core';
+import { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export type User = {
   id: string;
@@ -12,13 +13,15 @@ export type User = {
   roles: Array<string>;
 };
 
-type UserInfoModalProps = {
-  user: User | null;
-};
+
 
 const UserInfoComponent = () => {
   const location = useLocation();
   const user = location.state?.user as User | undefined;
+  const navigate = useNavigate();
+
+
+
 
   if (!user) {
     return <Text>User data not available.</Text>;
@@ -67,15 +70,16 @@ const UserInfoComponent = () => {
           temporibus libero cupiditate! Quas vel aut veniam sunt. A illum earum, illo necessitatibus
           amet voluptatem, quaerat ut, non dolorum ad vitae quas praesentium. Minima quasi cum optio
           sit, dolore natus maiores laudantium fugit saepe amet, dolores, architecto atque. Delectus
-          modi deleniti asperiores consequuntur, beatae cum sed. Distinctio numquam delectus amet
-          nisi repellat autem laudantium iste, repellendus dolorum tempora voluptatibus in ipsam
-          optio nulla? Saepe, at. Ut, vero adipisci. Repellat perspiciatis dolores voluptate
+          
           delectus ea sit excepturi id placeat vero, vitae quam tempore voluptatum accusamus hic, ut
           magni tempora, inventore aspernatur consequatur at. Maxime rem autem vel illum facere.
           Eius quod accusantium inventore molestiae velit rerum nesciunt expedita nemo, voluptates
           quas mollitia voluptatum illo voluptatibus? Ducimus ullam officiis beatae, error accusamus
           voluptates asperiores nam ut magni sapiente eos nulla!
         </Text>
+        <Button mt='lg' variant="light" size="xl" color="blue" onClick={() => navigate(`/users/edit/${user.id}`, { state: { user } })}>
+          Edit Profile
+        </Button>
       </Flex>
     </Card>
   );
