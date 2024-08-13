@@ -33,14 +33,31 @@ The applications already has the following features:
 
 1. Implement the filters in the expandable panel at the top of the 'List Users' page. You should ideally design it so that it could handle a very large number
    of records in the future.
+*** Completed ***
+*** All the filters are tested and working as they should, additionally I added Apply Changes button to provide better UX when filtering through large number of records as well as a Reset Button to revert back to initial state of the filters ***
+
 2. The 'List Users' page should also allow the user to see all users in a table. The table should include some standard features such as sorting and pagination.
+*** Completed ***
+*** Added Table View of 'List Users' page where features as sorting and pagination were implemented. Additionally the user can toggle between Grid View and Table View with ease by the provided buttons ***
+
 3. Add a detail page for the user that shows their details and a list of roles they belong to.
+*** Completed ***
+*** Two detail pages were created. One a quick user preview by clicking on the image and the other a detail page that shows all details of the selected user via the View button ***
 
 ### Optional tasks:
 
 1. There is an issue with routing in the application. Can you fix it?
+*** Completed ***
+*** Error Page added in the routing of the application for better UX ***
+
 1. Add a page that allows editing of an existing user. For this you can call `PATCH /users/:id` with the appropriate data.
+*** Completed ***
+*** Page that allows editing of an existing user is added with loading state and navigation back to the 'Users Page' through the Edit Profile button in the Detail User View Page ***
+
 2. Add the ability to group users by their roles.
+*** Completed ***
+***  Implemented role-based grouping with selectable buttons for each role, allowing combinations and integration with existing filters. ***
+
 
 ## Notes
 
