@@ -1,5 +1,4 @@
-import React from 'react'
-import { Skeleton, Card, Group } from '@mantine/core';
+import { Skeleton, Card } from '@mantine/core';
 
 const SkeletonComponent = () => {
   return (

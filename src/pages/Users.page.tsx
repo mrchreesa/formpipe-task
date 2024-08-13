@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
   Button,
-  Card,
   Collapse,
   Group,
   Image,
@@ -20,17 +19,15 @@ import GridBlack from '../assets/grid-black.svg';
 import TableIcon from '../assets/table-icon.svg';
 import TableBlack from '../assets/table-black.svg';
 import TableView from '@/components/TableView';
-import UserInfoModal from '@/components/UserInfoModal';
+import UserInfoModal from '@/components/User/UserInfoModal';
+import { User } from '@/types/userTypes';
 
-export type User = {
-  id: string;
+type FilterValues = {
   name: string;
-  avatar: string;
-  gender: 'female' | 'male';
-  hair: 'black' | 'brown' | 'blonde' | 'red' | 'grey';
-  eyes: 'brown' | 'blue' | 'green';
-  glasses: boolean;
-  roles: Array<string>;
+  hair: 'Black' | 'Brown' | 'Blonde' | 'Red' | 'Grey' | null;
+  eyes: 'Brown' | 'Blue' | 'Green' | 'Grey' | null;
+  gender: 'Male' | 'Female' | null;
+  glasses: 'all' | 'glasses' | 'no-glasses';
 };
 
 
@@ -43,11 +40,12 @@ export function UsersPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null); 
   const [modalOpened, { open, close }] = useDisclosure(false); 
 
-  const filtersInitialValue = {
+  
+  const filtersInitialValue: FilterValues = {
     name: '',
-    hair: null,
-    eyes: null,
-    gender: null,
+    hair: null ,
+    eyes: null ,
+    gender: null ,
     glasses: 'all',
   };
   const [filters, setFilters] = useState(filtersInitialValue);
@@ -78,17 +76,24 @@ export function UsersPage() {
       );
     }
 
-    if (filters.hair) {
-      filtered = filtered.filter((user) => user.hair === filters.hair);
+    if (filters.hair !== null) {
+      filtered = filtered.filter((user) => 
+        user.hair.toLowerCase() === filters.hair!.toLowerCase()
+      );
     }
-
-    if (filters.eyes) {
-      filtered = filtered.filter((user) => user.eyes === filters.eyes);
+    
+    if (filters.eyes !== null) {
+      filtered = filtered.filter((user) => 
+        user.eyes.toLowerCase() === filters.eyes!.toLowerCase()
+      );
     }
-
-    if (filters.gender) {
-      filtered = filtered.filter((user) => user.gender === filters.gender);
+    
+    if (filters.gender !== null) {
+      filtered = filtered.filter((user) => 
+        user.gender.toLowerCase() === filters.gender!.toLowerCase()
+      );
     }
+    
 
     if (filters.glasses !== 'all') {
       const hasGlasses = filters.glasses === 'glasses';
@@ -110,7 +115,10 @@ export function UsersPage() {
     setSelectedUser(user); 
     open();
   };
-
+  console.log(filters)
+  console.log(filteredUsers);
+  
+  
   return (
     <>
       <Title order={1}>Users</Title>
@@ -184,20 +192,24 @@ export function UsersPage() {
       </Collapse>
 
       <Group miw={600}>
-        {loading ? (
-          <>
-            <SkeletonComponent />
-            <SkeletonComponent /> 
-            <SkeletonComponent />
-          </>
-         ) : toggleGrid ? (
-          filteredUsers.map((user, index) => (
-            <GridView key={index} user={user} onClick={() => handleUserClick(user)} />
-          ))
-        ) : (
-          <TableView users={filteredUsers} onUserClick={handleUserClick} />
-        )}
-      </Group>
+  {loading ? (
+    <>
+      <SkeletonComponent />
+      <SkeletonComponent /> 
+      <SkeletonComponent />
+      <SkeletonComponent />
+    </>
+  ) : filteredUsers.length === 0 ? (  // Check if no users are found
+    <div>No users found</div>  
+  ) : toggleGrid ? (
+    filteredUsers.map((user, index) => (
+      <GridView key={index} user={user} onClick={() => handleUserClick(user)} />
+    ))
+  ) : (
+    <TableView users={filteredUsers} onUserClick={handleUserClick} />
+  )}
+</Group>
+
       <UserInfoModal user={selectedUser} opened={modalOpened} onClose={close} />
     </>
   );

@@ -1,16 +1,7 @@
 import { Button, Card, Title, Image } from '@mantine/core';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
-export type User = {
-  id: string;
-  name: string;
-  avatar: string;
-  gender: 'female' | 'male';
-  hair: 'black' | 'brown' | 'blonde' | 'red' | 'grey';
-  eyes: 'brown' | 'blue' | 'green';
-  glasses: boolean;
-};
+import { User } from '../types/userTypes';
 
 type GridViewProps = {
   user: User;

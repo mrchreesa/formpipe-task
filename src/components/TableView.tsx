@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Table,
   Avatar,
-  Group,
   Button,
   Text,
   ActionIcon,
@@ -12,16 +11,7 @@ import {
 } from '@mantine/core';
 import Ascending from '../assets/ascending.svg';
 import Descending from '../assets/descending.svg';
-export type User = {
-  id: string;
-  name: string;
-  avatar: string;
-  gender: 'female' | 'male';
-  hair: 'black' | 'brown' | 'blonde' | 'red' | 'grey';
-  eyes: 'brown' | 'blue' | 'green';
-  glasses: boolean;
-  roles: Array<string>;
-};
+import { User } from '../types/userTypes';
 
 type TableViewProps = {
   users: User[];
@@ -54,14 +44,11 @@ const TableView: React.FC<TableViewProps> = ({ users, onUserClick }) => {
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   let currentUsers = sortedUsers.slice(indexOfFirstUser, indexOfLastUser);
 
+  // Toggle the sort order state
   const handleSortName = () => {
     setToggleSortName((prev) => !prev);
   
-  }
-
-  console.log(currentUsers);
-  
-
+  };
   // Calculate total pages
   const totalPages = Math.ceil(users.length / usersPerPage);
 

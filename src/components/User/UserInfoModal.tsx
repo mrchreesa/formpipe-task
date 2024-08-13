@@ -1,16 +1,5 @@
-import { Modal, Button,Text, Group, Image, Flex } from '@mantine/core';
-
-
-export type User = {
-    id: string;
-    name: string;
-    avatar: string;
-    gender: 'female' | 'male';
-    hair: 'black' | 'brown' | 'blonde' | 'red' | 'grey';
-    eyes: 'brown' | 'blue' | 'green';
-    glasses: boolean;
-    roles: Array<string>;
-  };
+import { Modal,Text, Image, Flex } from '@mantine/core';
+import { User } from '../../types/userTypes';
 
 type UserInfoModalProps = {
   user: User | null;

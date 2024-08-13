@@ -1,18 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button, TextInput, Select, Group, Container, Stack } from '@mantine/core';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { User } from '../../types/userTypes';
 
-export type User = {
-  id: string;
-  name: string;
-  avatar: string;
-  gender: 'female' | 'male';
-  hair: 'black' | 'brown' | 'blonde' | 'red' | 'grey';
-  eyes: 'brown' | 'blue' | 'green';
-  glasses: boolean;
-  roles: Array<string>;
-};
 
 const EditUserComponent = () => {
   const location = useLocation();
@@ -43,6 +34,7 @@ const EditUserComponent = () => {
       roles,
     };
 
+    // Decided to use axios, since it's part of the tech stack in Formpipe
     axios
     .patch(`http://localhost:3000/users/${user?.id}`, updatedUser)
     .then(() => {
@@ -57,7 +49,7 @@ const EditUserComponent = () => {
     }
     );
 };
-
+  // Display a loading message while the user data is being fetched
   if (!user) return <div>Loading...</div>;
 
   return (

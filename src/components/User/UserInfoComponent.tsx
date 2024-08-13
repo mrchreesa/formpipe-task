@@ -1,18 +1,6 @@
 import { Flex, Text, Image, Card, Button } from '@mantine/core';
-import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-
-export type User = {
-  id: string;
-  name: string;
-  avatar: string;
-  gender: 'female' | 'male';
-  hair: 'black' | 'brown' | 'blonde' | 'red' | 'grey';
-  eyes: 'brown' | 'blue' | 'green';
-  glasses: boolean;
-  roles: Array<string>;
-};
-
+import { User } from '../../types/userTypes';
 
 
 const UserInfoComponent = () => {
@@ -22,7 +10,7 @@ const UserInfoComponent = () => {
 
 
 
-
+// Handle the case where the user data is not available
   if (!user) {
     return <Text>User data not available.</Text>;
   }
