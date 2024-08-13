@@ -35,7 +35,7 @@ export function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [opened, { toggle }] = useDisclosure(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [toggleGrid, setToggleGrid] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null); 
   const [modalOpened, { open, close }] = useDisclosure(false); 
@@ -115,9 +115,6 @@ export function UsersPage() {
     setSelectedUser(user); 
     open();
   };
-  console.log(filters)
-  console.log(filteredUsers);
-  
   
   return (
     <>

@@ -8,7 +8,6 @@ import { User } from '../../types/userTypes';
 const EditUserComponent = () => {
   const location = useLocation();
   const user = location.state?.user as User | undefined;
-  const { id } = useParams<{ id: string }>(); 
   const navigate = useNavigate(); 
   const [isLoading, setIsLoading] = useState(false);
 
